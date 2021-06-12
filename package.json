@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "start": "npx tsc --watch"
+  },
   "dependencies": {
     "typescript": "^4.3.2"
   }

@@ -1,3 +1,6 @@
+# ignore compiled typescript
+src/*.js
+
 # compiled output
 /dist
 /tmp

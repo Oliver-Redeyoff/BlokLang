@@ -1,0 +1,1 @@
+export type blockPosition = {x:number, y:number};
