@@ -1,8 +1,13 @@
 {
   "scripts": {
-    "start": "npx tsc --watch"
+    "start": "concurrently --names \"TYPESCRIPT,HTTP-SERVER\" -c \"bgBlue.bold,bgMagenta.bold\" \"yarn watch:ts\" \"yarn watch:server\"",
+    "watch:ts": "npx tsc --watch --preserveWatchOutput | awk '{gsub(/\\033c/,\"\") system(\"\")}1'",
+    "watch:server": "npx http-server ./src -c-1 -p 8010"
   },
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
+    "concurrently": "^6.2.0",
+    "http-server": "^0.12.3",
     "typescript": "^4.3.2"
   }
 }

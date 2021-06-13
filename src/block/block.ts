@@ -1,16 +1,17 @@
-import { blockPosition } from './types';
+import { blockPosition } from './types.js';
 
 export default class {
 
     position: blockPosition;
+    input: {} = {};
+    output: {} = {};
 
     constructor(position: blockPosition){
         this.position = position;
     }
 
     run(input:{}) {
-        let output:{};
-        return output;
+        return this.output;
     }
 
     get x() {
@@ -18,6 +19,13 @@ export default class {
     }
     get y() {
         return this.position.y;
+    }
+
+    get inputType() {
+        return typeof this.input;
+    }
+    get outputType() {
+        return typeof this.output;
     }
 
 }
