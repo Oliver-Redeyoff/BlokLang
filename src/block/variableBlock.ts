@@ -1,21 +1,22 @@
 import block from './block.js';
-import { blockPosition } from './types.js';
+import { blockPosition, defaultProperties } from './types.js';
 
 type inputType = {};
-type outputType = number | string;
+type outputType = number;
+interface propertiesType extends defaultProperties {value: any}
 
-export default class extends block {
+export default class<variableType> extends block<inputType, variableType, propertiesType> {
 
-    input:inputType = {};
-    output:outputType = 0;
+    properties:propertiesType = {
+        value: {} as variableType
+    }
     
     constructor(position: blockPosition){
         super(position);
     }
 
-    run() {
-        this.output = 5;
-        return this.output;
+    run(): variableType {
+        return this.properties.value;
     }
 
 }

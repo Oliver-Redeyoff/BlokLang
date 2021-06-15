@@ -1,23 +1,28 @@
-import { blockPosition } from './types.js';
+import { blockPosition, defaultProperties } from './types.js';
 
-export default class {
+export default class<inputType, outputType, propertyType extends defaultProperties> {
 
+    input: inputType = {} as inputType;
+    output: outputType = {} as outputType;
+    properties: propertyType = {} as propertyType;
     position: blockPosition;
-    input: {} = {};
-    output: {} = {};
 
     constructor(position: blockPosition){
         this.position = position;
     }
 
-    run(input:{}) {
+    run(input:inputType):outputType {
         return this.output;
     }
 
-    get x() {
+    setProperties(properties:propertyType){
+        this.properties = {...this.properties, ...properties};
+    }
+
+    get x():number {
         return this.position.x;
     }
-    get y() {
+    get y():number {
         return this.position.y;
     }
 
@@ -26,6 +31,10 @@ export default class {
     }
     get outputType() {
         return typeof this.output;
+    }
+
+    get color(): string {
+        return this.properties.color ?? "";
     }
 
 }
