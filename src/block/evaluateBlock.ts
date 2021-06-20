@@ -22,7 +22,6 @@ export default class extends block<inputType, outputType, propertiesType> {
         for (const prop in input) {
             if(prop == "x") this.properties.expression = this.properties.expression.replace("x", input.x.toString())
             if(prop == "y") this.properties.expression = this.properties.expression.replace("y", input.x.toString())
-            //this.properties.expression.replace(prop, input[prop])
         }
         return eval(this.properties.expression);
     }

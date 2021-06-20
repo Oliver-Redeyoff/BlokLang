@@ -1,10 +1,20 @@
 {
     "compilerOptions": {
-        "target": "ES2015",
+        "baseUrl": ".",
+        "target": "es6",
+        "outDir": "./src/build",
         "strict": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true
+        "moduleResolution": "Node",
+        "forceConsistentCasingInFileNames": true,
+        "paths": {
+            "konva": ["node_modules/konva/lib/core"]
+        },
+        "lib": [
+            "es6",
+            "dom"
+        ]
     },
     "include": [
         "src/block/*.ts"

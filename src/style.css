@@ -1,0 +1,24 @@
+.canvas-container {
+    position: absolute;
+    top: 100px;
+    left: 0px;
+    height: calc(100vh - 100px);
+    width: 100vw;
+}
+.canvas-container .block-canvas {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 80%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.canvas-container .block-list{
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    height: 100%;
+    width: 20%;
+    background-color: aliceblue;
+}

@@ -1,6 +1,7 @@
 <head>
     <base href=".">
-    <script type="module" src="block/gui.js"></script>
+    <script type="module" src="gui.js"></script>
+    <script src="https://unpkg.com/konva@8/konva.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -8,5 +9,17 @@
     <h1>Blocks</h1>
 
     <p id='result'>running...</p>
+
+    <div class="canvas-container">
+        <div id="block-canvas"></div>
+        <div class="block-list">
+            <div class="block">
+                Variable block
+            </div>
+            <div class="block">
+                Evaluate block
+            </div>
+        </div>
+    </div>
 
 </body>
