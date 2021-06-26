@@ -2,22 +2,19 @@
     "compilerOptions": {
         "baseUrl": ".",
         "target": "es6",
-        "outDir": "./src/build",
+        "outDir": "./src",
         "strict": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
         "moduleResolution": "Node",
         "forceConsistentCasingInFileNames": true,
-        "paths": {
-            "konva": ["node_modules/konva/lib/core"]
-        },
         "lib": [
             "es6",
             "dom"
         ]
     },
     "include": [
-        "src/block/*.ts"
+        "src/lib/*.ts"
     ],
     "exclude": [
         "node_modules",

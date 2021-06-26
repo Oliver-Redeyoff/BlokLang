@@ -5,7 +5,7 @@
     height: calc(100vh - 100px);
     width: 100vw;
 }
-.canvas-container .block-canvas {
+.canvas-container #block-canvas {
     position: absolute;
     top: 0px;
     left: 0px;
@@ -21,4 +21,15 @@
     height: 100%;
     width: 20%;
     background-color: aliceblue;
+}
+
+.block-list .block {
+    margin: 5%;
+    padding: 10px;
+    box-sizing: border-box;
+    color: white;
+    width: 90%;
+    height: 100px;
+    background-color: grey;
+    border-radius: 5px;
 }

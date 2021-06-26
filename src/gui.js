@@ -1,13 +1,8 @@
-import { test } from './build/main.js';
-
-var canvasSize = {
-    width: 0,
-    height: 0
-}
+import Konva from 'konva';
+import { test } from './main.js';
 
 function testBlock() {
     var res = test()
-    console.log(res)
     var resultRef = document.getElementById('result');
     if(resultRef!=null){
         resultRef.innerHTML = res.toString();
@@ -15,12 +10,28 @@ function testBlock() {
 }
 testBlock()
 
-
+var stageWidth = 100;
+var stageHeight = 100;
 var stage = new Konva.Stage({
   container: 'block-canvas',
-  width: window.innerWidth,
-  height: window.innerHeight,
+  width: stageWidth,
+  height: stageHeight,
 });
+
+function fitStageIntoParentContainer() {
+  var container = document.getElementById('block-canvas');
+
+  var containerWidth = container.offsetWidth;
+  var containerHeight = container.offsetHeight;
+
+  var scaleWidth = containerWidth / stageWidth;
+  var scaleHeight = containerHeight / stageHeight;
+
+  stage.width(stageWidth * scaleWidth);
+  stage.height(stageHeight * scaleHeight);
+}
+window.addEventListener('resize', fitStageIntoParentContainer);
+fitStageIntoParentContainer();
 
 // add canvas element
 var layer = new Konva.Layer();
@@ -46,3 +57,17 @@ box.on('mouseover', function () {
 box.on('mouseout', function () {
   document.body.style.cursor = 'default';
 });
+
+window.allowDrop = function(ev) {
+  ev.preventDefault();
+}
+
+window.drag = function(ev) {
+  ev.dataTransfer.setData("text", ev.target.id);
+}
+
+window.drop = function(ev) {
+  ev.preventDefault();
+  var data = ev.dataTransfer.getData("text");
+  console.log(data);
+}

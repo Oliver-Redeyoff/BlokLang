@@ -1,7 +1,6 @@
 <head>
     <base href=".">
-    <script type="module" src="gui.js"></script>
-    <script src="https://unpkg.com/konva@8/konva.min.js"></script>
+    <script type="module" src="main.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -11,12 +10,12 @@
     <p id='result'>running...</p>
 
     <div class="canvas-container">
-        <div id="block-canvas"></div>
+        <div id="block-canvas" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
         <div class="block-list">
-            <div class="block">
+            <div id='variable-block' class="block" draggable="true" ondragstart="drag(event)">
                 Variable block
             </div>
-            <div class="block">
+            <div id='evaluate-block' class="block">
                 Evaluate block
             </div>
         </div>
