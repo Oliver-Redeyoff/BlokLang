@@ -2,7 +2,7 @@
     "compilerOptions": {
         "baseUrl": ".",
         "target": "es6",
-        "outDir": "./src",
+        "outDir": "./src/lib/build",
         "strict": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
