@@ -5,25 +5,19 @@ export default class<inputType, outputType, propertyType extends defaultProperti
     input: inputType = {} as inputType;
     output: outputType = {} as outputType;
     properties: propertyType = {} as propertyType;
-    position: blockPosition;
 
-    constructor(position: blockPosition){
-        this.position = position;
+    // Checks if an input is valid for, by default the block doesn't accept input so this returns false
+    validateInput(inputCandidate: any){
+        return false;
     }
-
+    
+    // Runs the internal logic of block given the input
     run(input:inputType):outputType {
         return this.output;
     }
 
-    setProperties(properties:propertyType){
+    setProperties(properties: Partial<propertyType>){
         this.properties = {...this.properties, ...properties};
-    }
-
-    get x():number {
-        return this.position.x;
-    }
-    get y():number {
-        return this.position.y;
     }
 
     get inputType() {

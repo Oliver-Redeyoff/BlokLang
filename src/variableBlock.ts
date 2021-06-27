@@ -5,17 +5,17 @@ type inputType = {};
 type outputType = number;
 interface propertiesType extends defaultProperties {value: any}
 
-export default class<variableType> extends block<inputType, variableType, propertiesType> {
+export default class extends block<inputType, outputType, propertiesType> {
+
+    input:inputType = {};
+    output:outputType = 0;
 
     properties:propertiesType = {
-        value: {} as variableType
-    }
-    
-    constructor(position: blockPosition){
-        super(position);
+        color: 'black',
+        value: {} as outputType
     }
 
-    run(): variableType {
+    run(input: inputType = {}): outputType {
         return this.properties.value;
     }
 

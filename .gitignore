@@ -1,5 +1,5 @@
 # ignore compiled typescript
-src/lib/build/*.js
+src/build/*.js
 
 # compiled output
 /dist/main.js

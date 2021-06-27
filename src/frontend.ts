@@ -1,18 +1,21 @@
 import Konva from 'konva';
-import { test } from './main.js';
+import { test, blockFactory } from './backend.js';
+import { EBlocks, FtBMapping } from './types.js';
 
-var EBlockTypes = {
-  'variable-block': {
+var blockAttrs = {
+  1: {
     title: 'Value',
     width: 100,
     height: 100
   },
-  'evaluate-block': {
+  2: {
     title: 'Evaluate',
     width: 200,
     height: 150
   }
 }
+
+var FtBMapping: FtBMapping[] = [];
 
 function testBlock() {
     var res = test()
@@ -23,6 +26,10 @@ function testBlock() {
 }
 testBlock()
 
+
+/////////////////
+// Setup Konva //
+/////////////////
 var stageWidth = 100;
 var stageHeight = 100;
 var stage = new Konva.Stage({
@@ -47,19 +54,21 @@ function fitStageIntoParentContainer() {
 window.addEventListener('resize', fitStageIntoParentContainer);
 fitStageIntoParentContainer();
 
-// add canvas element
 var layer = new Konva.Layer();
 stage.add(layer);
 
-function addBlock(x: number, y: number, type: keyof typeof EBlockTypes){
+function addBlock(x: number, y: number, type: EBlocks){
 
-  let blockWidth = EBlockTypes[type].width;
-  let blockHeight = EBlockTypes[type].height;
+  let blockWidth = blockAttrs[type].width;
+  let blockHeight = blockAttrs[type].height;
 
   // block group
   var group = new Konva.Group({
     draggable: true
   })
+
+  // Instantiate class and create mapping
+  FtBMapping.push({frontendId: group._id, backendObject: blockFactory(type)})
 
   // background box
   var box = new Konva.Rect({
@@ -84,7 +93,7 @@ function addBlock(x: number, y: number, type: keyof typeof EBlockTypes){
   var text = new Konva.Text({
     x: x+blockWidth/2,
     y: y+blockHeight/2,
-    text: EBlockTypes[type].title,
+    text: blockAttrs[type].title,
     fontSize: 24,
     fontFamily: 'Calibri',
     fill: 'white',
@@ -93,23 +102,54 @@ function addBlock(x: number, y: number, type: keyof typeof EBlockTypes){
   text.offsetY(text.height() / 2);
   group.add(text);
 
-  var circle = new Konva.Circle({
-    x: x+blockWidth,
-    y: y+blockHeight/2,
-    radius: 10,
-    fill: 'red',
-  });
-  circle.on('mouseover', function () {
-    this.fill('green')
-  });
-  circle.on('mouseout', function () {
-    this.fill('red')
-  });
-  group.add(circle);
+  // inputs
+  for(let i=0 ; i<2 ; i++){
+    var circle = new Konva.Circle({
+      x: x,
+      y: y+blockHeight/2 + 25*i,
+      radius: 10,
+      fill: 'red',
+    });
+    circle.on('mouseover', function () {
+      this.fill('green')
+    });
+    circle.on('mouseout', function () {
+      this.fill('red')
+    });
+    circle.on('click', function() {
+      console.log(layer)
+    })
+    group.add(circle);
+  }
+
+  // outputs
+  for(let i=0 ; i<2 ; i++){
+    var circle = new Konva.Circle({
+      x: x+blockWidth,
+      y: y+blockHeight/2 + 25*i,
+      radius: 10,
+      fill: 'blue',
+    });
+    circle.on('mouseover', function () {
+      this.fill('green')
+    });
+    circle.on('mouseout', function () {
+      this.fill('blue')
+    });
+    circle.on('click', function() {
+      console.log('test')
+    })
+    group.add(circle);
+  }
 
   layer.add(group);
+  console.log(FtBMapping)
 }
 
+
+/////////////////////////
+// Drag and drop logic //
+/////////////////////////
 declare global {
   interface Window {
     allowDrop: Function;
@@ -120,11 +160,9 @@ declare global {
 window.allowDrop = function(ev: any) {
   ev.preventDefault();
 }
-
 window.drag = function(ev: any) {
   ev.dataTransfer.setData("blockType", ev.target.id);
 }
-
 window.drop = function(ev: any) {
   var blockType = ev.dataTransfer.getData("blockType");
   addBlock(ev.offsetX, ev.offsetY, blockType);

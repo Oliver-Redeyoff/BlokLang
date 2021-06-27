@@ -2,7 +2,7 @@
     "compilerOptions": {
         "baseUrl": ".",
         "target": "es6",
-        "outDir": "./src/lib/build",
+        "outDir": "./src/build",
         "strict": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
@@ -14,7 +14,7 @@
         ]
     },
     "include": [
-        "src/lib/*.ts"
+        "src/*.ts"
     ],
     "exclude": [
         "node_modules",
