@@ -1,6 +1,6 @@
 import Konva from 'konva';
 import { test, blockFactory } from './backend.js';
-import { EBlocks, FtBMapping } from './types.js';
+import { EBlocks, blockLink, canvasBlock } from './types.js';
 
 var blockAttrs = {
   1: {
@@ -15,16 +15,10 @@ var blockAttrs = {
   }
 }
 
-var FtBMapping: FtBMapping[] = [];
+var FtBMapping: canvasBlock[] = [];
+var blockLinks: blockLink[] = [];
+var linkBuffer: blockLink = {lineFrontendId: "", originFrontendId: "", destinationFrontendId: ""};
 
-function testBlock() {
-    var res = test()
-    var resultRef = document.getElementById('result');
-    if(resultRef!=null){
-        resultRef.innerHTML = res.toString();
-    }
-}
-testBlock()
 
 
 /////////////////
@@ -57,21 +51,42 @@ fitStageIntoParentContainer();
 var layer = new Konva.Layer();
 stage.add(layer);
 
+var blockCounter: number = 0;
+var linkCounter: number = 0;
+
+
+
+///////////////////////////////
+// Adding and editing blocks //
+///////////////////////////////
 function addBlock(x: number, y: number, type: EBlocks){
+  
+  blockCounter++;
+  let blockId = 'block'+blockCounter;
 
   let blockWidth = blockAttrs[type].width;
   let blockHeight = blockAttrs[type].height;
 
   // block group
-  var group = new Konva.Group({
-    draggable: true
+  let frontendBlock = new Konva.Group({
+    draggable: true,
+    id: blockId
   })
+  frontendBlock.on('dragmove', function() { updateLinkPos(this.id()); });
 
-  // Instantiate class and create mapping
-  FtBMapping.push({frontendId: group._id, backendObject: blockFactory(type)})
+  // backend object
+  let backendBlock = blockFactory(type)
+
+  // Create frontend to backend mapping
+  FtBMapping.push(
+    {
+      frontendId: blockId, 
+      backendObject: backendBlock
+    }
+  )
 
   // background box
-  var box = new Konva.Rect({
+  let box = new Konva.Rect({
     x: x,
     y: y,
     width: blockWidth,
@@ -79,7 +94,8 @@ function addBlock(x: number, y: number, type: EBlocks){
     fill: 'black',
     stroke: 'black',
     strokeWidth: 4,
-    cornerRadius: 10
+    cornerRadius: 10,
+    id: blockId + '-bg'
   });
   box.on('mouseover', function () {
     document.body.style.cursor = 'pointer';
@@ -87,28 +103,32 @@ function addBlock(x: number, y: number, type: EBlocks){
   box.on('mouseout', function () {
     document.body.style.cursor = 'default';
   });
-  group.add(box)
+  frontendBlock.add(box)
 
   // text
-  var text = new Konva.Text({
+  let text = new Konva.Text({
     x: x+blockWidth/2,
     y: y+blockHeight/2,
     text: blockAttrs[type].title,
     fontSize: 24,
     fontFamily: 'Calibri',
     fill: 'white',
+    id: blockId + '-text'
   });
   text.offsetX(text.width() / 2);
   text.offsetY(text.height() / 2);
-  group.add(text);
+  frontendBlock.add(text);
 
   // inputs
-  for(let i=0 ; i<2 ; i++){
-    var circle = new Konva.Circle({
+  let inputKeys = Object.keys(backendBlock.input);
+  let blockInputs = new Konva.Group()
+  inputKeys.forEach((inputKey, index) => {
+    let circle = new Konva.Circle({
       x: x,
-      y: y+blockHeight/2 + 25*i,
+      y: y + blockHeight/2 + 25*index,
       radius: 10,
       fill: 'red',
+      id: blockId + '-input'+index
     });
     circle.on('mouseover', function () {
       this.fill('green')
@@ -117,34 +137,90 @@ function addBlock(x: number, y: number, type: EBlocks){
       this.fill('red')
     });
     circle.on('click', function() {
-      console.log(layer)
+      if(linkBuffer.originFrontendId != "") {
+        linkBuffer.destinationFrontendId = this.id();
+        createLinkWithBuffer();
+      } else {
+        return;
+      }
     })
-    group.add(circle);
-  }
+    blockInputs.add(circle);
+  });
+  frontendBlock.add(blockInputs)
 
-  // outputs
-  for(let i=0 ; i<2 ; i++){
-    var circle = new Konva.Circle({
-      x: x+blockWidth,
-      y: y+blockHeight/2 + 25*i,
-      radius: 10,
-      fill: 'blue',
-    });
-    circle.on('mouseover', function () {
-      this.fill('green')
-    });
-    circle.on('mouseout', function () {
-      this.fill('blue')
-    });
-    circle.on('click', function() {
-      console.log('test')
-    })
-    group.add(circle);
-  }
+  // output
+  let circle = new Konva.Circle({
+    x: x+blockWidth,
+    y: y+blockHeight/2,
+    radius: 10,
+    fill: 'blue',
+    id: blockId + '-output'
+  });
+  circle.on('mouseover', function () {
+    this.fill('green')
+  });
+  circle.on('mouseout', function () {
+    this.fill('blue')
+  });
+  circle.on('click', function() {
+    linkBuffer.originFrontendId = this.id();
+    linkBuffer.destinationFrontendId = "";
+  })
+  frontendBlock.add(circle);
 
-  layer.add(group);
-  console.log(FtBMapping)
+  layer.add(frontendBlock);
 }
+
+function createLinkWithBuffer() {
+
+  var linkFrontendId = "link" + linkCounter++;
+
+  let outputElement = stage.findOne('#' + linkBuffer.originFrontendId);
+  let inputElement = stage.findOne('#' + linkBuffer.destinationFrontendId);
+
+  blockLinks.push({
+      lineFrontendId: linkFrontendId,
+      originFrontendId: linkBuffer.originFrontendId, 
+      destinationFrontendId: linkBuffer.destinationFrontendId
+    });
+
+  var linkLine = new Konva.Line({
+    points: [
+      outputElement.absolutePosition().x, 
+      outputElement.absolutePosition().y, 
+      inputElement.absolutePosition().x, 
+      inputElement.absolutePosition().y
+    ],
+    stroke: 'green',
+    strokeWidth: 5,
+    lineCap: 'round',
+    lineJoin: 'round',
+    id: linkFrontendId
+  });
+
+  layer.add(linkLine);
+
+  // reset link buffer
+  linkBuffer = {lineFrontendId: "", originFrontendId: "", destinationFrontendId: ""};
+}
+
+function updateLinkPos(subjectId: string) {
+  blockLinks.forEach((link) => {
+    if(link.destinationFrontendId.split('-')[0] == subjectId || link.originFrontendId.split('-')[0] == subjectId) {
+      let outputElement = stage.findOne('#' + link.originFrontendId);
+      let inputElement = stage.findOne('#' + link.destinationFrontendId);
+      let lineElement:any = stage.findOne('#' + link.lineFrontendId);
+
+      lineElement.setPoints([
+        outputElement.absolutePosition().x, 
+        outputElement.absolutePosition().y, 
+        inputElement.absolutePosition().x, 
+        inputElement.absolutePosition().y
+      ]);
+    }
+  })
+}
+
 
 
 /////////////////////////
@@ -165,6 +241,6 @@ window.drag = function(ev: any) {
 }
 window.drop = function(ev: any) {
   var blockType = ev.dataTransfer.getData("blockType");
-  addBlock(ev.offsetX, ev.offsetY, blockType);
+  addBlock(ev.offsetX, ev.offsetY, parseInt(blockType));
   ev.preventDefault();
 }

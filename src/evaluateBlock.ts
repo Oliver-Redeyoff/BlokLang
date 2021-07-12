@@ -18,7 +18,7 @@ export default class extends block<inputType, outputType, propertiesType> {
         expression: ""
     }
 
-    validateInput(inputCandidate: any){
+    validateInput(key: string, inputCandidate: any){
         if(!('x' in inputCandidate)) return false;
         if(inputCandidate.x == null) return false;
         if(!('y' in inputCandidate)) return false;

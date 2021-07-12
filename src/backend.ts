@@ -17,9 +17,9 @@ export function test() {
 
 export function blockFactory(blockType: EBlocks) {
     switch(blockType){
-        case(EBlocks.variable):
+        case EBlocks.variable:
             return new variableBlock();
-        case(EBlocks.evaluate):
+        case EBlocks.evaluate:
             return new evaluateBlock();
     }
 }

@@ -7,7 +7,7 @@ export default class<inputType, outputType, propertyType extends defaultProperti
     properties: propertyType = {} as propertyType;
 
     // Checks if an input is valid for, by default the block doesn't accept input so this returns false
-    validateInput(inputCandidate: any){
+    validateInput(key: string, inputCandidate: any){
         return false;
     }
     
