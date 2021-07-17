@@ -1,6 +1,6 @@
 import Konva from 'konva';
-import { test, blockFactory } from './backend.js';
-import { EBlocks, blockLink, canvasBlock } from './types.js';
+import { runBlokPile, blockFactory } from './backend.js';
+import { EBlokType, blokLink, canvasBlok } from './types.js';
 
 var blockAttrs = {
   1: {
@@ -15,9 +15,9 @@ var blockAttrs = {
   }
 }
 
-var FtBMapping: canvasBlock[] = [];
-var blockLinks: blockLink[] = [];
-var linkBuffer: blockLink = {lineFrontendId: "", originFrontendId: "", destinationFrontendId: ""};
+var blokPile: canvasBlok[] = [];
+var blokLinks: blokLink[] = [];
+var linkBuffer: blokLink = {lineFrontendId: "", originFrontendId: "", destinationFrontendId: ""};
 
 
 
@@ -59,7 +59,7 @@ var linkCounter: number = 0;
 ///////////////////////////////
 // Adding and editing blocks //
 ///////////////////////////////
-function addBlock(x: number, y: number, type: EBlocks){
+function addBlock(x: number, y: number, type: EBlokType){
   
   blockCounter++;
   let blockId = 'block'+blockCounter;
@@ -78,7 +78,7 @@ function addBlock(x: number, y: number, type: EBlocks){
   let backendBlock = blockFactory(type)
 
   // Create frontend to backend mapping
-  FtBMapping.push(
+  blokPile.push(
     {
       frontendId: blockId, 
       backendObject: backendBlock
@@ -178,7 +178,7 @@ function createLinkWithBuffer() {
   let outputElement = stage.findOne('#' + linkBuffer.originFrontendId);
   let inputElement = stage.findOne('#' + linkBuffer.destinationFrontendId);
 
-  blockLinks.push({
+  blokLinks.push({
       lineFrontendId: linkFrontendId,
       originFrontendId: linkBuffer.originFrontendId, 
       destinationFrontendId: linkBuffer.destinationFrontendId
@@ -205,7 +205,7 @@ function createLinkWithBuffer() {
 }
 
 function updateLinkPos(subjectId: string) {
-  blockLinks.forEach((link) => {
+  blokLinks.forEach((link) => {
     if(link.destinationFrontendId.split('-')[0] == subjectId || link.originFrontendId.split('-')[0] == subjectId) {
       let outputElement = stage.findOne('#' + link.originFrontendId);
       let inputElement = stage.findOne('#' + link.destinationFrontendId);
@@ -231,6 +231,8 @@ declare global {
     allowDrop: Function;
     drag: Function;
     drop: Function;
+    toggleBlokList: Function;
+    runBlokPile: Function;
   }
 }
 window.allowDrop = function(ev: any) {
@@ -243,4 +245,12 @@ window.drop = function(ev: any) {
   var blockType = ev.dataTransfer.getData("blockType");
   addBlock(ev.offsetX, ev.offsetY, parseInt(blockType));
   ev.preventDefault();
+}
+window.toggleBlokList = function() {
+  let blokListElement = document.getElementById("blok-list");
+  blokListElement?.classList.toggle('minimised');
+  blokListElement?.classList.toggle('open');
+}
+window.runBlokPile = function() {
+  runBlokPile(blokPile, blokLinks);
 }

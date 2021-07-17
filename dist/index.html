@@ -5,20 +5,38 @@
 </head>
 
 <body>
-    <h1>Blocks</h1>
 
-    <p id='result'>running...</p>
+    <div class="header">
+        <div class="title">Blok</div>
+        <div class="run-btn" onclick="runBlokPile()">Run</div>
+    </div>
+
+    <div class="tool-bar">
+        <div class="tool">
+            <img src="./assets/cursorIcon.png">
+        </div>
+    </div>
 
     <div class="canvas-container">
         <div id="block-canvas" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-        <div class="block-list">
-            <div id='1' class="block" draggable="true" ondragstart="drag(event)">
+    </div>
+
+    <div id="blok-list" class="minimised">
+
+        <img class="toggle" src="./assets/plusIcon.png" onclick="toggleBlokList()">
+
+        <div class="blok-list-inner">
+            <h1>Add new blok</h1>
+            <h4>Drag onto canvas to add</h4>
+
+            <div id='1' class="blok" draggable="true" ondragstart="drag(event)">
                 Variable block
             </div>
-            <div id='2' class="block" draggable="true" ondragstart="drag(event)">
+            <div id='2' class="blok" draggable="true" ondragstart="drag(event)">
                 Evaluate block
             </div>
         </div>
+        
     </div>
 
 </body>

@@ -1,35 +1,161 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
+
+body {
+    margin: 0px;
+    font-family: 'Roboto', sans-serif;
+}
+
+
+/***********
+** Header **
+***********/
+.header {
+    padding-left: 50px;
+}
+.header div {
+    display: inline-block;
+    font-size: 16px;
+    margin: 10px 20px 10px 0px;
+    padding: 0px 10px 0px 10px;
+    height: 30px;
+    line-height: 30px;
+}
+.header .title {
+    width: 100px;
+    font-weight: 500;
+    font-size: 18px;
+    color: white;
+    background-color: black;
+}
+.header .run-btn {
+    color: white;
+    background-color: forestgreen;
+    cursor: pointer;
+}
+.header .run-btn {
+    background-color: green;
+}
+
+
+
+/***********
+** Header **
+***********/
+.tool-bar {
+    position: absolute;
+    top: 50px;
+    left: 0px;
+    width: 50px;
+    height: calc(100vh - 50px);
+}
+.tool-bar .tool {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    background-color: transparent;
+    transition: all 0.2s;
+}
+.tool-bar .tool:hover {
+    background-color: #F3F3F3;
+}
+.tool-bar .tool img {
+    position: absolute;
+    width: 30%;
+    height: 30%;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}
+
+
+
+/***********
+** Canvas **
+***********/
 .canvas-container {
     position: absolute;
-    top: 100px;
-    left: 0px;
-    height: calc(100vh - 100px);
-    width: 100vw;
+    top: 50px;
+    left: 50px;
+    height: calc(100vh - 50px);
+    width: calc(100vw - 50px);
 }
 .canvas-container #block-canvas {
     position: absolute;
     top: 0px;
     left: 0px;
     height: 100%;
-    width: 80%;
-    background-color: rgba(0, 0, 0, 0.5);
+    width: 100%;
+    background-color: #F3F3F3;
 }
 
-.canvas-container .block-list{
+
+
+/**************
+** Blok menu **
+**************/
+#blok-list {
     position: absolute;
-    top: 0px;
-    right: 0px;
-    height: 100%;
-    width: 20%;
-    background-color: aliceblue;
+    bottom: 50px;
+    right: 50px;
+    border-radius: 30px;
+    background-color: #D0FFD8;
+    overflow: hidden;
+    transition: all 0.4s;
+}
+#blok-list.minimised {
+    height: 60px;
+    width: 60px;
+}
+#blok-list.open {
+    height: calc(100vh - 100px);
+    width: 300px;
 }
 
-.block-list .block {
-    margin: 5%;
+#blok-list .toggle {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    transition: all 0.4s;
+}
+#blok-list.minimised .toggle {
+    transform: rotate(0deg);
+}
+#blok-list.open .toggle{
+    transform: rotate(45deg);
+}
+
+.blok-list-inner{
+    padding: 5%;
+    transition: opacity 0.2s;
+}
+#blok-list.minimised .blok-list-inner {
+    opacity: 0;
+    pointer-events: none;
+}
+#blok-list.open .blok-list-inner {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.blok-list-inner .blok {
     padding: 10px;
+    margin-top: 15px;
     box-sizing: border-box;
     color: white;
-    width: 90%;
+    width: 100%;
     height: 100px;
-    background-color: grey;
-    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 15px;
+}
+
+.blok-list-inner h1 {
+    font-weight: 500;
+    margin-bottom: 0px;
+}
+.blok-list-inner h4 {
+    font-weight: 400;
+    margin-top: 5px;
+    margin-bottom: 30px;
 }

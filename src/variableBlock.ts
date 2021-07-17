@@ -1,5 +1,5 @@
 import block from './block.js';
-import { blockPosition, defaultProperties } from './types.js';
+import { defaultProperties } from './types.js';
 
 type inputType = {};
 type outputType = number;

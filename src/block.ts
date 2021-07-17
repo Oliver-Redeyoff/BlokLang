@@ -1,4 +1,4 @@
-import { blockPosition, defaultProperties } from './types.js';
+import { defaultProperties } from './types.js';
 
 export default class<inputType, outputType, propertyType extends defaultProperties> {
 

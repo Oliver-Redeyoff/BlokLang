@@ -1,5 +1,5 @@
 import block from './block.js';
-import { blockPosition, defaultProperties } from './types.js';
+import { defaultProperties } from './types.js';
 
 interface inputType {x: number, y: number};
 type outputType = boolean;

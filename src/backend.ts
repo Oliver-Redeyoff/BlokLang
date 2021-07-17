@@ -1,9 +1,13 @@
-import { EBlocks } from './types.js';
+import { EBlokType, canvasBlok, blokLink } from './types.js';
 import variableBlock from './variableBlock.js';
 import evaluateBlock from './evaluateBlock.js';
 
 // this is where the program is declared as a bunch of linked block classes
-export function test() {
+export function runBlokPile(blokPile: canvasBlok[], blokLinks: blokLink[]) {
+
+    console.log(blokPile);
+    console.log(blokLinks);
+
     var firstBlock = new variableBlock();
     firstBlock.setProperties({value: 20});
     
@@ -15,11 +19,11 @@ export function test() {
     return(thirdBlock.run({x: firstBlock.run(), y: secondBlock.run()}))   
 }
 
-export function blockFactory(blockType: EBlocks) {
+export function blockFactory(blockType: EBlokType) {
     switch(blockType){
-        case EBlocks.variable:
+        case EBlokType.variable:
             return new variableBlock();
-        case EBlocks.evaluate:
+        case EBlokType.evaluate:
             return new evaluateBlock();
     }
 }
