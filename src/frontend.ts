@@ -51,7 +51,7 @@ fitStageIntoParentContainer();
 var layer = new Konva.Layer();
 stage.add(layer);
 
-var blockCounter: number = 0;
+var blokCounter: number = 0;
 var linkCounter: number = 0;
 
 
@@ -61,18 +61,18 @@ var linkCounter: number = 0;
 ///////////////////////////////
 function addBlock(x: number, y: number, type: EBlokType){
   
-  blockCounter++;
-  let blockId = 'block'+blockCounter;
+  blokCounter++;
+  let blokId = 'blok'+blokCounter;
 
-  let blockWidth = blockAttrs[type].width;
-  let blockHeight = blockAttrs[type].height;
+  let blokWidth = blockAttrs[type].width;
+  let blokHeight = blockAttrs[type].height;
 
   // block group
-  let frontendBlock = new Konva.Group({
+  let frontendBlok = new Konva.Group({
     draggable: true,
-    id: blockId
+    id: blokId
   })
-  frontendBlock.on('dragmove', function() { updateLinkPos(this.id()); });
+  frontendBlok.on('dragmove', function() { updateLinkPos(this.id()); });
 
   // backend object
   let backendBlock = blockFactory(type)
@@ -80,8 +80,10 @@ function addBlock(x: number, y: number, type: EBlokType){
   // Create frontend to backend mapping
   blokPile.push(
     {
-      frontendId: blockId, 
-      backendObject: backendBlock
+      frontendId: blokId, 
+      backendObject: backendBlock,
+      inputRefs: [],
+      outputRef: {} as canvasBlok
     }
   )
 
@@ -89,13 +91,13 @@ function addBlock(x: number, y: number, type: EBlokType){
   let box = new Konva.Rect({
     x: x,
     y: y,
-    width: blockWidth,
-    height: blockHeight,
+    width: blokWidth,
+    height: blokHeight,
     fill: 'black',
     stroke: 'black',
     strokeWidth: 4,
     cornerRadius: 10,
-    id: blockId + '-bg'
+    id: blokId + '-bg'
   });
   box.on('mouseover', function () {
     document.body.style.cursor = 'pointer';
@@ -103,32 +105,32 @@ function addBlock(x: number, y: number, type: EBlokType){
   box.on('mouseout', function () {
     document.body.style.cursor = 'default';
   });
-  frontendBlock.add(box)
+  frontendBlok.add(box)
 
   // text
   let text = new Konva.Text({
-    x: x+blockWidth/2,
-    y: y+blockHeight/2,
+    x: x+blokWidth/2,
+    y: y+blokHeight/2,
     text: blockAttrs[type].title,
     fontSize: 24,
     fontFamily: 'Calibri',
     fill: 'white',
-    id: blockId + '-text'
+    id: blokId + '-text'
   });
   text.offsetX(text.width() / 2);
   text.offsetY(text.height() / 2);
-  frontendBlock.add(text);
+  frontendBlok.add(text);
 
   // inputs
-  let inputKeys = Object.keys(backendBlock.inputs.map(input => input.key));
+  let inputKeys = backendBlock.inputs.map(input => input.inputKey);
   let blockInputs = new Konva.Group()
   inputKeys.forEach((inputKey, index) => {
     let circle = new Konva.Circle({
       x: x,
-      y: y + blockHeight/2 + 25*index,
+      y: y + blokHeight/2 + 25*index,
       radius: 10,
       fill: 'red',
-      id: blockId + '-input/'+inputKey
+      id: blokId + '-input/'+inputKey
     });
     circle.on('mouseover', function () {
       this.fill('green')
@@ -146,15 +148,15 @@ function addBlock(x: number, y: number, type: EBlokType){
     })
     blockInputs.add(circle);
   });
-  frontendBlock.add(blockInputs)
+  frontendBlok.add(blockInputs)
 
   // output
   let circle = new Konva.Circle({
-    x: x+blockWidth,
-    y: y+blockHeight/2,
+    x: x+blokWidth,
+    y: y+blokHeight/2,
     radius: 10,
     fill: 'blue',
-    id: blockId + '-output'
+    id: blokId + '-output'
   });
   circle.on('mouseover', function () {
     this.fill('green')
@@ -166,9 +168,9 @@ function addBlock(x: number, y: number, type: EBlokType){
     linkBuffer.originFrontendId = this.id();
     linkBuffer.destinationFrontendId = "";
   })
-  frontendBlock.add(circle);
+  frontendBlok.add(circle);
 
-  layer.add(frontendBlock);
+  layer.add(frontendBlok);
 }
 
 function createLinkWithBuffer() {

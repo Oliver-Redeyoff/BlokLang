@@ -8,8 +8,8 @@ export default class<inputsType, outputType, propertyType extends defaultPropert
     properties: propertyType = {} as propertyType;
 
     // Checks if an input is valid, by default accepts anything
-    validateInput(key: string, inputCandidate: any): boolean{
-        let inputCheckersTemp: inputTypeCheckers[] = this.inputs.filter(input => input.key == key);
+    validateInput(inputKey: string, inputCandidate: any): boolean{
+        let inputCheckersTemp: inputTypeCheckers[] = this.inputs.filter(input => input.inputKey == inputKey);
 
         // there should be exactly one corresponding input
         if(inputCheckersTemp.length != 1) return false;

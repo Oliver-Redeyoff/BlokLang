@@ -8,8 +8,8 @@ interface propertiesType extends defaultProperties {expression: string}
 export default class extends block<inputsType, outputType, propertiesType> {
 
     inputs: inputTypeCheckers[] = [
-        {key: 'x', typeGuardKeys: ['isNumber']},
-        {key: 'y', typeGuardKeys: ['isNumber']}
+        {inputKey: 'x', typeGuardKeys: ['isNumber']},
+        {inputKey: 'y', typeGuardKeys: ['isNumber']}
     ];
 
     properties:propertiesType = {

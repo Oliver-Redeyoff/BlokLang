@@ -1,8 +1,10 @@
 // universal types
 export interface defaultProperties {color: string};
-export interface inputTypeCheckers {key: string, typeGuardKeys: typeGuardsKeys[]}
+export interface inputTypeCheckers {inputKey: string, typeGuardKeys: typeGuardsKeys[]}
 
-export interface canvasBlok {frontendId: string, backendObject: any};
+export interface canvasBlok {frontendId: string, backendObject: any, inputRefs: inputRef[], outputRef: canvasBlok};
+export interface inputRef {inputKey: string, blokRef: canvasBlok};
+
 export interface blokLink {lineFrontendId: string, originFrontendId: string, destinationFrontendId: string};
 
 // block specific types
