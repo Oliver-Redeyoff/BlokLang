@@ -120,7 +120,7 @@ function addBlock(x: number, y: number, type: EBlokType){
   frontendBlock.add(text);
 
   // inputs
-  let inputKeys = Object.keys(backendBlock.input);
+  let inputKeys = Object.keys(backendBlock.inputs.map(input => input.key));
   let blockInputs = new Konva.Group()
   inputKeys.forEach((inputKey, index) => {
     let circle = new Konva.Circle({
@@ -128,7 +128,7 @@ function addBlock(x: number, y: number, type: EBlokType){
       y: y + blockHeight/2 + 25*index,
       radius: 10,
       fill: 'red',
-      id: blockId + '-input'+index
+      id: blockId + '-input/'+inputKey
     });
     circle.on('mouseover', function () {
       this.fill('green')

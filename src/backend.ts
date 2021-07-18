@@ -19,6 +19,12 @@ export function runBlokPile(blokPile: canvasBlok[], blokLinks: blokLink[]) {
     return(thirdBlock.run({x: firstBlock.run(), y: secondBlock.run()}))   
 }
 
+function createBlokTreeRec(blokPile: canvasBlok[], blokLinks: blokLink[]) {
+    // for each blok :
+    // - look if it has any incomming inputs, add reference to that blok as well as the key that the input is for
+    // 
+}
+
 export function blockFactory(blockType: EBlokType) {
     switch(blockType){
         case EBlokType.variable:

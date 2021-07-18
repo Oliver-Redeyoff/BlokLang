@@ -1,30 +1,38 @@
-import { defaultProperties } from './types.js';
+import { defaultProperties, typeGuards, inputTypeCheckers } from './types.js';
 
-export default class<inputType, outputType, propertyType extends defaultProperties> {
+var inputs = {}
 
-    input: inputType = {} as inputType;
-    output: outputType = {} as outputType;
+export default class<inputsType, outputType, propertyType extends defaultProperties> {
+
+    inputs: inputTypeCheckers[] = [];
     properties: propertyType = {} as propertyType;
 
-    // Checks if an input is valid for, by default the block doesn't accept input so this returns false
-    validateInput(key: string, inputCandidate: any){
-        return false;
+    // Checks if an input is valid, by default accepts anything
+    validateInput(key: string, inputCandidate: any): boolean{
+        let inputCheckersTemp: inputTypeCheckers[] = this.inputs.filter(input => input.key == key);
+
+        // there should be exactly one corresponding input
+        if(inputCheckersTemp.length != 1) return false;
+        
+        let inputChecker: inputTypeCheckers = inputCheckersTemp[0];
+
+        // check that each typeGuard is valid
+        let inputIsValid = true;
+        inputChecker.typeGuardKeys.forEach(typeGuardKey => {
+            if(!typeGuards[typeGuardKey](inputCandidate)) inputIsValid = false;
+        })
+
+        return inputIsValid;
     }
     
     // Runs the internal logic of block given the input
-    run(input:inputType):outputType {
-        return this.output;
+    run(input:inputsType):outputType {
+        return {} as outputType;
     }
 
+    // Updates inner properties of blok
     setProperties(properties: Partial<propertyType>){
         this.properties = {...this.properties, ...properties};
-    }
-
-    get inputType() {
-        return typeof this.input;
-    }
-    get outputType() {
-        return typeof this.output;
     }
 
     get color(): string {

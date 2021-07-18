@@ -7,9 +7,6 @@ interface propertiesType extends defaultProperties {value: any}
 
 export default class extends block<inputType, outputType, propertiesType> {
 
-    input:inputType = {};
-    output:outputType = 0;
-
     properties:propertiesType = {
         color: 'black',
         value: {} as outputType
