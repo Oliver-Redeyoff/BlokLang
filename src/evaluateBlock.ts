@@ -14,10 +14,10 @@ export default class extends block<inputsType, outputType, propertiesType> {
 
     properties:propertiesType = {
         color: 'black',
-        expression: ""
+        expression: "x"
     }
 
-    run(inputs: inputsType): outputType {
+    runInternal(inputs: inputsType): outputType {
         for (const prop in inputs) {
             if(prop == "x") this.properties.expression = this.properties.expression.replace("x", inputs.x.toString())
             if(prop == "y") this.properties.expression = this.properties.expression.replace("y", inputs.y.toString())

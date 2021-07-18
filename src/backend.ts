@@ -1,15 +1,35 @@
-import { EBlokType, canvasBlok, blokLink } from './types.js';
+import { EBlokType, blok, blokLink } from './types.js';
 import variableBlock from './variableBlock.js';
 import evaluateBlock from './evaluateBlock.js';
 
-// this is where the program is declared as a bunch of linked block classes
-export function runBlokPile(blokPile: canvasBlok[], blokLinks: blokLink[]) {
+
+
+//////////////////
+// BLOK FACTORY //
+//////////////////
+
+export function blokFactory(blockType: EBlokType) {
+    switch(blockType){
+        case EBlokType.variable:
+            return new variableBlock();
+        case EBlokType.evaluate:
+            return new evaluateBlock();
+    }
+}
+
+
+
+///////////////
+// RUN LOGIC //
+///////////////
+
+export function runBlokPile(blokPile: blok[], blokLinks: blokLink[]) {
 
     let blokTree = createBlokTreeRec(blokPile, blokLinks);
     console.log(blokTree);
 
     let isRunning = true;
-    let depth = 0;
+    let depth = 1;
     let i = 0;
     while(isRunning) {
 
@@ -20,11 +40,21 @@ export function runBlokPile(blokPile: canvasBlok[], blokLinks: blokLink[]) {
 
         // Get all bloks in tree at depth
         let blokBatch = getBloksAtMaxDepth(blokTree, depth);
-        console.log(depth);
-        console.log(blokBatch);
         if(blokBatch.length == 0) {
             isRunning = false;
         }
+
+        blokBatch.forEach(blok => {
+
+            let blokInputs: any = {};
+            blok.inputRefs.forEach(inputBlok => {
+                blokInputs[inputBlok.inputKey] = inputBlok.blokRef.backendObject.run();
+            })
+            
+            console.log('running blok : ' + blok.frontendId);
+            console.log(blokInputs);
+            console.log(blok.backendObject.run(blokInputs));
+        })
 
         ++depth;
         ++i;
@@ -41,7 +71,7 @@ export function runBlokPile(blokPile: canvasBlok[], blokLinks: blokLink[]) {
     // return(thirdBlock.run({x: firstBlock.run(), y: secondBlock.run()}))   
 }
 
-function createBlokTreeRec(blokPile: canvasBlok[], blokLinks: blokLink[]) {
+function createBlokTreeRec(blokPile: blok[], blokLinks: blokLink[]) {
     // for each blok :
     // - look if it has any incomming inputs, add reference to that blok as well as the key that the input is for
     try {
@@ -76,27 +106,23 @@ function createBlokTreeRec(blokPile: canvasBlok[], blokLinks: blokLink[]) {
     return blokPile;
 }
 
-export function blockFactory(blockType: EBlokType) {
-    switch(blockType){
-        case EBlokType.variable:
-            return new variableBlock();
-        case EBlokType.evaluate:
-            return new evaluateBlock();
-    }
-}
 
 
-// Helper methods
+////////////////////
+// HELPER METHODS //
+////////////////////
+
 function getBlokId(Id: string) {
     return Id.split('-')[0];
 }
+
 function getInputKey(Id: string) {
     return Id.split('-')[1].split('/')[1];
 }
 
-function getBloksAtMaxDepth(blokTree: canvasBlok[], depth: number) {
+function getBloksAtMaxDepth(blokTree: blok[], depth: number) {
 
-    let result: canvasBlok[] = [];
+    let result: blok[] = [];
 
     blokTree.forEach(blok => {
         if(getBlokMaxDepthRec(blok, 0) == depth) {
@@ -106,7 +132,8 @@ function getBloksAtMaxDepth(blokTree: canvasBlok[], depth: number) {
 
     return result;
 }
-function getBlokMaxDepthRec(blok: canvasBlok, maxDepth: number): number{
+
+function getBlokMaxDepthRec(blok: blok, maxDepth: number): number{
     if(blok.inputRefs.length == 1) {
         return getBlokMaxDepthRec(blok.inputRefs[0].blokRef, maxDepth+1);
     }

@@ -9,10 +9,10 @@ export default class extends block<inputType, outputType, propertiesType> {
 
     properties:propertiesType = {
         color: 'black',
-        value: {} as outputType
+        value: 1
     }
 
-    run(input: inputType = {}): outputType {
+    runInternal(input: inputType = {}): outputType {
         return this.properties.value;
     }
 

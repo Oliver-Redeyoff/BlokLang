@@ -1,6 +1,6 @@
 import Konva from 'konva';
-import { runBlokPile, blockFactory } from './backend.js';
-import { EBlokType, blokLink, canvasBlok } from './types.js';
+import { runBlokPile, blokFactory } from './backend.js';
+import { EBlokType, blokLink, blok } from './types.js';
 
 var blockAttrs = {
   1: {
@@ -15,7 +15,7 @@ var blockAttrs = {
   }
 }
 
-var blokPile: canvasBlok[] = [];
+var blokPile: blok[] = [];
 var blokLinks: blokLink[] = [];
 var linkBuffer: blokLink = {lineFrontendId: "", originFrontendId: "", destinationFrontendId: ""};
 
@@ -75,7 +75,7 @@ function addBlock(x: number, y: number, type: EBlokType){
   frontendBlok.on('dragmove', function() { updateLinkPos(this.id()); });
 
   // backend object
-  let backendBlock = blockFactory(type)
+  let backendBlock = blokFactory(type)
 
   // Create frontend to backend mapping
   blokPile.push(
@@ -83,7 +83,7 @@ function addBlock(x: number, y: number, type: EBlokType){
       frontendId: blokId, 
       backendObject: backendBlock,
       inputRefs: [],
-      outputRef: {} as canvasBlok
+      outputRef: {} as blok
     }
   )
 

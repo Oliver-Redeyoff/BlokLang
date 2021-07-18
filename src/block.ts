@@ -1,11 +1,11 @@
 import { defaultProperties, typeGuards, inputTypeCheckers } from './types.js';
 
-var inputs = {}
-
 export default class<inputsType, outputType, propertyType extends defaultProperties> {
 
     inputs: inputTypeCheckers[] = [];
     properties: propertyType = {} as propertyType;
+
+    cachedOutput: outputType | null = null;
 
     // Checks if an input is valid, by default accepts anything
     validateInput(inputKey: string, inputCandidate: any): boolean{
@@ -27,6 +27,19 @@ export default class<inputsType, outputType, propertyType extends defaultPropert
     
     // Runs the internal logic of block given the input
     run(input:inputsType):outputType {
+
+        if(this.cachedOutput == null) {
+            let output = this.runInternal(input);
+            this.cachedOutput = output;
+            return output;
+        } else {
+            console.log('returning cached output')
+            return this.cachedOutput;
+        }
+
+    }
+
+    runInternal(input: inputsType): outputType {
         return {} as outputType;
     }
 
