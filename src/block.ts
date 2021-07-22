@@ -26,14 +26,27 @@ export default class<inputsType, outputType, propertyType extends defaultPropert
     }
     
     // Runs the internal logic of block given the input
-    run(input:inputsType):outputType {
+    run(input: inputsType):outputType {
+
+        // Validate the input
+        this.inputs.forEach(inputChecker => {
+            let inputIsValid = true;
+
+            if(inputChecker.inputKey in input) {
+                inputIsValid = this.validateInput(inputChecker.inputKey, input[inputChecker.inputKey as keyof inputsType]);
+            } else {
+                inputIsValid = this.validateInput(inputChecker.inputKey, null);
+            }
+            if(!inputIsValid) {
+                throw("Input " + inputChecker.inputKey + " is no valid.");
+            }
+        });
 
         if(this.cachedOutput == null) {
             let output = this.runInternal(input);
             this.cachedOutput = output;
             return output;
         } else {
-            console.log('returning cached output')
             return this.cachedOutput;
         }
 

@@ -14,7 +14,7 @@ export default class extends block<inputsType, outputType, propertiesType> {
 
     properties:propertiesType = {
         color: 'black',
-        expression: "x"
+        expression: "x+y"
     }
 
     runInternal(inputs: inputsType): outputType {
