@@ -8,7 +8,8 @@ interface propertiesType extends defaultProperties {value: any}
 export default class extends block<inputType, outputType, propertiesType> {
 
     properties:propertiesType = {
-        color: 'black',
+        name: 'Variable',
+        color: 'red',
         value: 1
     }
 

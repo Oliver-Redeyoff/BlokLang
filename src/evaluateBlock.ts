@@ -13,7 +13,8 @@ export default class extends block<inputsType, outputType, propertiesType> {
     ];
 
     properties:propertiesType = {
-        color: 'black',
+        name: 'Evaluate',
+        color: 'blue',
         expression: "x+y"
     }
 

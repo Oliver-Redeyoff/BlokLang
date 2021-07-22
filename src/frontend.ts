@@ -2,19 +2,6 @@ import Konva from 'konva';
 import { runBlokPile, blokFactory } from './backend.js';
 import { EBlokType, blokLink, blok } from './types.js';
 
-var blockAttrs = {
-  1: {
-    title: 'Value',
-    width: 100,
-    height: 100
-  },
-  2: {
-    title: 'Evaluate',
-    width: 200,
-    height: 150
-  }
-}
-
 var blokPile: blok[] = [];
 var blokLinks: blokLink[] = [];
 var linkBuffer: blokLink = {lineFrontendId: "", originFrontendId: "", destinationFrontendId: ""};
@@ -24,6 +11,7 @@ var linkBuffer: blokLink = {lineFrontendId: "", originFrontendId: "", destinatio
 /////////////////
 // Setup Konva //
 /////////////////
+
 var stageWidth = 100;
 var stageHeight = 100;
 var stage = new Konva.Stage({
@@ -51,129 +39,38 @@ fitStageIntoParentContainer();
 var layer = new Konva.Layer();
 stage.add(layer);
 
-var blokCounter: number = 0;
-var linkCounter: number = 0;
-
 
 
 ///////////////////////////////
 // Adding and editing blocks //
 ///////////////////////////////
+
 function addBlock(x: number, y: number, type: EBlokType){
-  
-  blokCounter++;
-  let blokId = 'blok'+blokCounter;
 
-  let blokWidth = blockAttrs[type].width;
-  let blokHeight = blockAttrs[type].height;
+  let backendBlock = blokFactory(type);
+  let frontendBlok = backendBlock.renderBlok(x, y, createLinkWithBuffer, updateLinkPos, updateLinkBuffer);
 
-  // block group
-  let frontendBlok = new Konva.Group({
-    draggable: true,
-    id: blokId
-  })
-  frontendBlok.on('dragmove', function() { updateLinkPos(this.id()); });
-
-  // backend object
-  let backendBlock = blokFactory(type)
-
-  // Create frontend to backend mapping
   blokPile.push(
-    {
-      frontendId: blokId, 
-      backendObject: backendBlock,
-      inputRefs: [],
-      outputRef: {} as blok
-    }
-  )
-
-  // background box
-  let box = new Konva.Rect({
-    x: x,
-    y: y,
-    width: blokWidth,
-    height: blokHeight,
-    fill: 'black',
-    stroke: 'black',
-    strokeWidth: 4,
-    cornerRadius: 10,
-    id: blokId + '-bg'
-  });
-  box.on('mouseover', function () {
-    document.body.style.cursor = 'pointer';
-  });
-  box.on('mouseout', function () {
-    document.body.style.cursor = 'default';
-  });
-  frontendBlok.add(box)
-
-  // text
-  let text = new Konva.Text({
-    x: x+blokWidth/2,
-    y: y+blokHeight/2,
-    text: blockAttrs[type].title,
-    fontSize: 24,
-    fontFamily: 'Calibri',
-    fill: 'white',
-    id: blokId + '-text'
-  });
-  text.offsetX(text.width() / 2);
-  text.offsetY(text.height() / 2);
-  frontendBlok.add(text);
-
-  // inputs
-  let inputKeys = backendBlock.inputs.map(input => input.inputKey);
-  let blockInputs = new Konva.Group()
-  inputKeys.forEach((inputKey, index) => {
-    let circle = new Konva.Circle({
-      x: x,
-      y: y + blokHeight/2 + 25*index,
-      radius: 10,
-      fill: 'red',
-      id: blokId + '-input/'+inputKey
-    });
-    circle.on('mouseover', function () {
-      this.fill('green')
-    });
-    circle.on('mouseout', function () {
-      this.fill('red')
-    });
-    circle.on('click', function() {
-      if(linkBuffer.originFrontendId != "") {
-        linkBuffer.destinationFrontendId = this.id();
-        createLinkWithBuffer();
-      } else {
-        return;
+      {
+        frontendId: frontendBlok.id(),
+        backendObject: backendBlock,
+        inputRefs: [],
+        outputRef: {} as blok
       }
-    })
-    blockInputs.add(circle);
-  });
-  frontendBlok.add(blockInputs)
-
-  // output
-  let circle = new Konva.Circle({
-    x: x+blokWidth,
-    y: y+blokHeight/2,
-    radius: 10,
-    fill: 'blue',
-    id: blokId + '-output'
-  });
-  circle.on('mouseover', function () {
-    this.fill('green')
-  });
-  circle.on('mouseout', function () {
-    this.fill('blue')
-  });
-  circle.on('click', function() {
-    linkBuffer.originFrontendId = this.id();
-    linkBuffer.destinationFrontendId = "";
-  })
-  frontendBlok.add(circle);
+  )
 
   layer.add(frontendBlok);
 }
 
+function updateLinkBuffer(originId: string | null, destinationId: string | null) {
+  linkBuffer.originFrontendId = originId ?? linkBuffer.originFrontendId;
+  linkBuffer.destinationFrontendId = destinationId ?? linkBuffer.destinationFrontendId;
+}
+
+var linkCounter: number = 0;
 function createLinkWithBuffer() {
+
+  console.log(linkBuffer);
 
   var linkFrontendId = "link" + linkCounter++;
 
@@ -228,6 +125,7 @@ function updateLinkPos(subjectId: string) {
 /////////////////////////
 // Drag and drop logic //
 /////////////////////////
+
 declare global {
   interface Window {
     allowDrop: Function;

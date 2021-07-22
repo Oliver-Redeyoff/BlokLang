@@ -8,12 +8,15 @@ import evaluateBlock from './evaluateBlock.js';
 // BLOK FACTORY //
 //////////////////
 
+// Factory method for instantiating a blok object
+var blokCount = 0;
 export function blokFactory(blockType: EBlokType) {
+    ++blokCount;
     switch(blockType){
         case EBlokType.variable:
-            return new variableBlock();
+            return new variableBlock(blokCount);
         case EBlokType.evaluate:
-            return new evaluateBlock();
+            return new evaluateBlock(blokCount);
     }
 }
 
@@ -23,6 +26,7 @@ export function blokFactory(blockType: EBlokType) {
 // RUN LOGIC //
 ///////////////
 
+// Runs a blok pile by running the bloks in the tree in order of maximum tree depth
 export function runBlokPile(blokPile: blok[], blokLinks: blokLink[]) {
 
     let blokTree = createBlokTreeRec(blokPile, blokLinks);
@@ -59,21 +63,11 @@ export function runBlokPile(blokPile: blok[], blokLinks: blokLink[]) {
         ++depth;
         ++i;
     }
-
-    // var firstBlock = new variableBlock();
-    // firstBlock.setProperties({value: 20});
-    
-    // var secondBlock = new variableBlock();
-    // secondBlock.setProperties({value: 40});
-
-    // var thirdBlock = new evaluateBlock();
-    // thirdBlock.setProperties({expression: "x + y"})
-    // return(thirdBlock.run({x: firstBlock.run(), y: secondBlock.run()}))   
 }
 
+// Creates a blok tree by linking linked bloks together
 function createBlokTreeRec(blokPile: blok[], blokLinks: blokLink[]) {
-    // for each blok :
-    // - look if it has any incomming inputs, add reference to that blok as well as the key that the input is for
+    
     try {
         blokPile.forEach(blok => {
 

@@ -1,5 +1,5 @@
 // universal types
-export interface defaultProperties {color: string};
+export interface defaultProperties {name: string, color: string};
 export interface inputTypeCheckers {inputKey: string, typeGuardKeys: typeGuardsKeys[]}
 
 export interface blok {frontendId: string, backendObject: any, inputRefs: inputRef[], outputRef: blok};
