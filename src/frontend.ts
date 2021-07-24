@@ -48,7 +48,7 @@ stage.add(layer);
 function addBlock(x: number, y: number, type: EBlokType){
 
   let backendBlock = blokFactory(type);
-  let frontendBlok = backendBlock.renderBlok(x, y, createLinkWithBuffer, updateLinkPos, updateLinkBuffer);
+  let frontendBlok = backendBlock.renderBlok(x, y, blokOutputClickHandler, blokInputClickHandler, blokDragHandler);
 
   blokPile.push(
       {
@@ -62,15 +62,35 @@ function addBlock(x: number, y: number, type: EBlokType){
   layer.add(frontendBlok);
 }
 
-function updateLinkBuffer(originId: string | null, destinationId: string | null) {
-  linkBuffer.originFrontendId = originId ?? linkBuffer.originFrontendId;
-  linkBuffer.destinationFrontendId = destinationId ?? linkBuffer.destinationFrontendId;
+function blokOutputClickHandler(outputFId: string) {
+  linkBuffer.originFrontendId = outputFId;
+  linkBuffer.destinationFrontendId = "";
+}
+function blokInputClickHandler(inputFId: string) {
+  if(linkBuffer.originFrontendId != "") {
+    linkBuffer.destinationFrontendId = inputFId;
+    createLinkWithBuffer();
+  }
+}
+function blokDragHandler(subjectId: string) {
+  blokLinks.forEach((link) => {
+    if(link.destinationFrontendId.split('-')[0] == subjectId || link.originFrontendId.split('-')[0] == subjectId) {
+      let outputElement = stage.findOne('#' + link.originFrontendId);
+      let inputElement = stage.findOne('#' + link.destinationFrontendId);
+      let lineElement:any = stage.findOne('#' + link.lineFrontendId);
+
+      lineElement.setPoints([
+        outputElement.absolutePosition().x, 
+        outputElement.absolutePosition().y, 
+        inputElement.absolutePosition().x, 
+        inputElement.absolutePosition().y
+      ]);
+    }
+  })
 }
 
 var linkCounter: number = 0;
 function createLinkWithBuffer() {
-
-  console.log(linkBuffer);
 
   var linkFrontendId = "link" + linkCounter++;
 
@@ -101,23 +121,6 @@ function createLinkWithBuffer() {
 
   // reset link buffer
   linkBuffer = {lineFrontendId: "", originFrontendId: "", destinationFrontendId: ""};
-}
-
-function updateLinkPos(subjectId: string) {
-  blokLinks.forEach((link) => {
-    if(link.destinationFrontendId.split('-')[0] == subjectId || link.originFrontendId.split('-')[0] == subjectId) {
-      let outputElement = stage.findOne('#' + link.originFrontendId);
-      let inputElement = stage.findOne('#' + link.destinationFrontendId);
-      let lineElement:any = stage.findOne('#' + link.lineFrontendId);
-
-      lineElement.setPoints([
-        outputElement.absolutePosition().x, 
-        outputElement.absolutePosition().y, 
-        inputElement.absolutePosition().x, 
-        inputElement.absolutePosition().y
-      ]);
-    }
-  })
 }
 
 

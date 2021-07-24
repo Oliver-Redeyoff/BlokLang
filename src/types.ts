@@ -1,5 +1,5 @@
 // universal types
-export interface defaultProperties {name: string, color: string};
+export interface defaultProperties {name: string, color: string, size: {width: number, height: number}};
 export interface inputTypeCheckers {inputKey: string, typeGuardKeys: typeGuardsKeys[]}
 
 export interface blok {frontendId: string, backendObject: any, inputRefs: inputRef[], outputRef: blok};
@@ -17,7 +17,7 @@ export enum EBlokType {
 // Type checking methods
 export var typeGuards = {
     isNumber: function(input: any) {
-        return !isNaN(input);
+        return typeof input == "number";
     },
     isBoolean: function(input: any) {
         return typeof input == "boolean";

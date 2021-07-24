@@ -9,8 +9,9 @@ export default class extends block<inputType, outputType, propertiesType> {
 
     properties:propertiesType = {
         name: 'Variable',
-        color: 'red',
-        value: 1
+        color: 'rgb(72, 123, 65)',
+        value: 1,
+        size: {width: 120, height: 40}
     }
 
     runInternal(input: inputType = {}): outputType {

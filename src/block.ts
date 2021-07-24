@@ -1,6 +1,6 @@
 import Konva from 'konva';
 import { Group } from 'konva/lib/Group';
-import { defaultProperties, typeGuards, inputTypeCheckers, blokLink } from './types.js';
+import { defaultProperties, typeGuards, inputTypeCheckers } from './types.js';
 
 export default class<inputsType, outputType, propertyType extends defaultProperties> {
 
@@ -15,18 +15,18 @@ export default class<inputsType, outputType, propertyType extends defaultPropert
     }
 
     // Render the blok into a Konva group and return to frontend
-    renderBlok(x: number, y: number, createLinkCallback: Function, updateLinkPosCallback: Function, updateLinkBufferCallback: Function): Group {
+    renderBlok(x: number, y: number, outputClickHandler: Function, inputClickHandler: Function, blokDragHandler: Function): Group {
         let blokId = 'blok'+this.id;
 
-        let blokWidth = 200;
-        let blokHeight = 200;
+        let blokWidth = this.properties.size.width;
+        let blokHeight = this.properties.size.height;
 
         // block group
         let frontendBlok = new Konva.Group({
             draggable: true,
             id: blokId
         })
-        frontendBlok.on('dragmove', function() { updateLinkPosCallback(this.id()); });
+        frontendBlok.on('dragmove', function() { blokDragHandler(this.id()); });
 
         // background box
         let box = new Konva.Rect({
@@ -62,25 +62,24 @@ export default class<inputsType, outputType, propertyType extends defaultPropert
 
         // inputs
         let inputKeys = this.inputs.map(input => input.inputKey);
-        let blockInputs = new Konva.Group()
+        let blockInputs = new Konva.Group();
+        let inputOffSet = (this.inputs.length-1)*30/2;
         inputKeys.forEach((inputKey, index) => {
             let circle = new Konva.Circle({
                 x: x,
-                y: y + blokHeight/2 + 25*index,
+                y: y + blokHeight/2 -inputOffSet + 30*index,
                 radius: 10,
                 fill: 'red',
                 id: blokId + '-input/'+inputKey
             });
+
             circle.on('mouseover', function () {
                 this.fill('green')
             });
                 circle.on('mouseout', function () {
                 this.fill('red')
             });
-            circle.on('click', function() {
-                updateLinkBufferCallback(null, this.id());
-                createLinkCallback();
-            })
+            circle.on('click', function() {inputClickHandler(this.id())})
             blockInputs.add(circle);
         });
         frontendBlok.add(blockInputs)
@@ -99,9 +98,7 @@ export default class<inputsType, outputType, propertyType extends defaultPropert
         circle.on('mouseout', function () {
             this.fill('blue')
         });
-        circle.on('click', function() {
-            updateLinkBufferCallback(this.id(), '');
-        })
+        circle.on('click', function() {outputClickHandler(this.id())})
         frontendBlok.add(circle);
 
         return frontendBlok;
@@ -128,27 +125,29 @@ export default class<inputsType, outputType, propertyType extends defaultPropert
     // Runs the internal logic of block given the input
     run(input: inputsType):outputType {
 
-        // Validate the input
-        this.inputs.forEach(inputChecker => {
-            let inputIsValid = true;
-
-            if(inputChecker.inputKey in input) {
-                inputIsValid = this.validateInput(inputChecker.inputKey, input[inputChecker.inputKey as keyof inputsType]);
-            } else {
-                inputIsValid = this.validateInput(inputChecker.inputKey, null);
-            }
-            if(!inputIsValid) {
-                throw("Input " + inputChecker.inputKey + " is no valid.");
-            }
-        });
-
         // If cached output exists return that, if not run and cache result
-        if(this.cachedOutput == null) {
+        if(this.cachedOutput != null) {
+            return this.cachedOutput;
+        } else {
+            // Validate the input
+            this.inputs.forEach(inputChecker => {
+                let inputIsValid = true;
+
+                console.log(input);
+
+                if(inputChecker.inputKey in input) {
+                    inputIsValid = this.validateInput(inputChecker.inputKey, input[inputChecker.inputKey as keyof inputsType]);
+                } else {
+                    inputIsValid = this.validateInput(inputChecker.inputKey, null);
+                }
+                if(!inputIsValid) {
+                    throw("Input " + inputChecker.inputKey + " is no valid.");
+                }
+            });
+
             let output = this.runInternal(input);
             this.cachedOutput = output;
             return output;
-        } else {
-            return this.cachedOutput;
         }
     }
 
