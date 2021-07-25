@@ -26,7 +26,13 @@ export default class<inputsType, outputType, propertyType extends defaultPropert
             draggable: true,
             id: blokId
         })
-        frontendBlok.on('dragmove', function() { blokDragHandler(this.id()); });
+        frontendBlok.on('dragmove', function(evt) { 
+            evt.cancelBubble = true;
+            blokDragHandler(this.id()); 
+        });
+        frontendBlok.on("mousedown", function(evt) {
+            evt.cancelBubble = true;
+          })
 
         // background box
         let box = new Konva.Rect({
@@ -73,11 +79,13 @@ export default class<inputsType, outputType, propertyType extends defaultPropert
                 id: blokId + '-input/'+inputKey
             });
 
-            circle.on('mouseover', function () {
-                this.fill('green')
+            circle.on('mouseover', function (evt) {
+                this.fill('green');
+                evt.cancelBubble = true;
             });
-                circle.on('mouseout', function () {
-                this.fill('red')
+                circle.on('mouseout', function (evt) {
+                this.fill('red');
+                evt.cancelBubble = true;
             });
             circle.on('click', function() {inputClickHandler(this.id())})
             blockInputs.add(circle);
@@ -92,11 +100,13 @@ export default class<inputsType, outputType, propertyType extends defaultPropert
             fill: 'blue',
             id: blokId + '-output'
         });
-        circle.on('mouseover', function () {
-            this.fill('green')
+        circle.on('mouseover', function (evt) {
+            this.fill('green');
+            evt.cancelBubble = true;
         });
-        circle.on('mouseout', function () {
-            this.fill('blue')
+        circle.on('mouseout', function (evt) {
+            this.fill('blue');
+            evt.cancelBubble = true;
         });
         circle.on('click', function() {outputClickHandler(this.id())})
         frontendBlok.add(circle);
@@ -123,7 +133,7 @@ export default class<inputsType, outputType, propertyType extends defaultPropert
     }
     
     // Runs the internal logic of block given the input
-    run(input: inputsType):outputType {
+    async run(input: inputsType): Promise<outputType> {
 
         // If cached output exists return that, if not run and cache result
         if(this.cachedOutput != null) {
@@ -132,8 +142,6 @@ export default class<inputsType, outputType, propertyType extends defaultPropert
             // Validate the input
             this.inputs.forEach(inputChecker => {
                 let inputIsValid = true;
-
-                console.log(input);
 
                 if(inputChecker.inputKey in input) {
                     inputIsValid = this.validateInput(inputChecker.inputKey, input[inputChecker.inputKey as keyof inputsType]);
@@ -145,14 +153,14 @@ export default class<inputsType, outputType, propertyType extends defaultPropert
                 }
             });
 
-            let output = this.runInternal(input);
+            let output = await this.runInternal(input);
             this.cachedOutput = output;
             return output;
         }
     }
 
     // Internal run logic of the blok, returns nothing by default
-    runInternal(input: inputsType): outputType {
+    async runInternal(input: inputsType): Promise<outputType> {
         return {} as outputType;
     }
 

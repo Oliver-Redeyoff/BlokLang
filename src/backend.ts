@@ -27,7 +27,7 @@ export function blokFactory(blockType: EBlokType) {
 ///////////////
 
 // Runs a blok pile by running the bloks in the tree in order of maximum tree depth
-export function runBlokPile(blokPile: blok[], blokLinks: blokLink[]) {
+export async function runBlokPile(blokPile: blok[], blokLinks: blokLink[]) {
 
     let blokTree = createBlokTreeRec(blokPile, blokLinks);
     console.log(blokTree);
@@ -48,16 +48,17 @@ export function runBlokPile(blokPile: blok[], blokLinks: blokLink[]) {
             isRunning = false;
         }
 
-        blokBatch.forEach(blok => {
+        blokBatch.forEach(async (blok) => {
 
             let blokInputs: any = {};
-            blok.inputRefs.forEach(inputBlok => {
-                blokInputs[inputBlok.inputKey] = inputBlok.blokRef.backendObject.run();
-            })
+            
+            for(const inputBlok of blok.inputRefs) {
+                blokInputs[inputBlok.inputKey] = await inputBlok.blokRef.backendObject.run();
+            }
             
             console.log('running blok : ' + blok.frontendId);
             console.log(blokInputs);
-            console.log(blok.backendObject.run(blokInputs));
+            console.log(await blok.backendObject.run(blokInputs));
         })
 
         ++depth;

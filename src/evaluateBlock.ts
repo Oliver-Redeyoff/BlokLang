@@ -20,7 +20,7 @@ export default class extends block<inputsType, outputType, propertiesType> {
         size: {width: 150, height: 100}
     }
 
-    runInternal(input: inputsType): outputType {
+    async runInternal(input: inputsType): Promise<outputType> {
         for (const prop in input) {
             this.properties.expression = this.properties.expression.replace(prop, input[prop as keyof inputsType].toString());
         }

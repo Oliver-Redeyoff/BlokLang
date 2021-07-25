@@ -20,6 +20,30 @@ var stage = new Konva.Stage({
   height: stageHeight,
 });
 
+var stageScale = 1;
+var mouseDown = false;
+stage.on("wheel", function(e) {
+  stageScale -= e.evt.deltaY/100
+  if(stageScale <= 0.3) stageScale = 0.3;
+  if(stageScale >= 2) stageScale = 2;
+
+  stage.scale({x: stageScale, y: stageScale});
+})
+stage.on("mousedown", function(e) {
+  mouseDown = true;
+  stage.container().style.cursor = 'move';
+})
+stage.on("mouseup", function(e) {
+  mouseDown = false;
+  stage.container().style.cursor = 'default';
+})
+stage.on("mousemove", function(e) {
+  if(mouseDown) {
+    stage.offsetX(stage.offsetX() - e.evt.movementX);
+    stage.offsetY(stage.offsetY() - e.evt.movementY);
+  }
+})
+
 function fitStageIntoParentContainer() {
   var container = document.getElementById('block-canvas');
   if(container == null) return;
@@ -80,10 +104,10 @@ function blokDragHandler(subjectId: string) {
       let lineElement:any = stage.findOne('#' + link.lineFrontendId);
 
       lineElement.setPoints([
-        outputElement.absolutePosition().x, 
-        outputElement.absolutePosition().y, 
-        inputElement.absolutePosition().x, 
-        inputElement.absolutePosition().y
+        outputElement.getAbsolutePosition(stage).x, 
+        outputElement.getAbsolutePosition(stage).y, 
+        inputElement.getAbsolutePosition(stage).x, 
+        inputElement.getAbsolutePosition(stage).y
       ]);
     }
   })
@@ -98,17 +122,17 @@ function createLinkWithBuffer() {
   let inputElement = stage.findOne('#' + linkBuffer.destinationFrontendId);
 
   blokLinks.push({
-      lineFrontendId: linkFrontendId,
-      originFrontendId: linkBuffer.originFrontendId, 
-      destinationFrontendId: linkBuffer.destinationFrontendId
-    });
+    lineFrontendId: linkFrontendId,
+    originFrontendId: linkBuffer.originFrontendId, 
+    destinationFrontendId: linkBuffer.destinationFrontendId
+  });
 
   var linkLine = new Konva.Line({
     points: [
-      outputElement.absolutePosition().x, 
-      outputElement.absolutePosition().y, 
-      inputElement.absolutePosition().x, 
-      inputElement.absolutePosition().y
+      outputElement.getAbsolutePosition(stage).x, 
+      outputElement.getAbsolutePosition(stage).y, 
+      inputElement.getAbsolutePosition(stage).x, 
+      inputElement.getAbsolutePosition(stage).y
     ],
     stroke: 'green',
     strokeWidth: 5,

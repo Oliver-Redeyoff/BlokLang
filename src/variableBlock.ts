@@ -14,7 +14,7 @@ export default class extends block<inputType, outputType, propertiesType> {
         size: {width: 120, height: 40}
     }
 
-    runInternal(input: inputType = {}): outputType {
+    async runInternal(input: inputType): Promise<outputType> {
         return this.properties.value;
     }
 
