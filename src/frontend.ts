@@ -14,20 +14,44 @@ var linkBuffer: blokLink = {lineFrontendId: "", originFrontendId: "", destinatio
 
 var stageWidth = 100;
 var stageHeight = 100;
+
+var stageOffset = {x: 0, y: 0};
+
+
 var stage = new Konva.Stage({
   container: 'block-canvas',
   width: stageWidth,
   height: stageHeight,
+  x: 0,
+  y: 0
 });
 
+var canvasWidth = document.getElementById('block-canvas')?.clientWidth || 1;
+var canvasHeight = document.getElementById('block-canvas')?.clientHeight || 1;
+
+var windowWidth = window.innerWidth;
+var windowHeight = window.innerHeight;
+
 var stageScale = 1;
+stage.scale({x: stageScale, y: stageScale});
+
 var mouseDown = false;
 stage.on("wheel", function(e) {
-  stageScale -= e.evt.deltaY/100
-  if(stageScale <= 0.3) stageScale = 0.3;
-  if(stageScale >= 2) stageScale = 2;
+
+  stageScale -= e.evt.deltaY/100;
+
+  let mouse_x = e.evt.screenX;
+  let mouse_y = e.evt.screenY;
+
+  let stageScaleOffsetX = stage.width()/2 - stage.width()/2*stageScale
+  let stageScaleOffsetY = stage.height()/2 - stage.height()/2*stageScale
 
   stage.scale({x: stageScale, y: stageScale});
+
+  stage.x(stageScaleOffsetX);
+  stage.y(stageScaleOffsetY);
+
+
 })
 stage.on("mousedown", function(e) {
   mouseDown = true;
@@ -39,8 +63,10 @@ stage.on("mouseup", function(e) {
 })
 stage.on("mousemove", function(e) {
   if(mouseDown) {
-    stage.offsetX(stage.offsetX() - e.evt.movementX);
-    stage.offsetY(stage.offsetY() - e.evt.movementY);
+    stageOffset.x -= e.evt.movementX * 1/stageScale;
+    stageOffset.y -= e.evt.movementY * 1/stageScale;
+    stage.offsetX(stageOffset.x);
+    stage.offsetY(stageOffset.y);
   }
 })
 
@@ -63,7 +89,14 @@ fitStageIntoParentContainer();
 var layer = new Konva.Layer();
 stage.add(layer);
 
-
+let debugBorder = new Konva.Rect({
+  x: 0,
+  y: 0,
+  width: stage.width(),
+  height: stage.height(),
+  stroke: 'red'
+});
+layer.add(debugBorder);
 
 ///////////////////////////////
 // Adding and editing blocks //
