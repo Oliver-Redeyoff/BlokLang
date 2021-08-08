@@ -26,13 +26,9 @@ var stage = new Konva.Stage({
   y: 0
 });
 
-var canvasWidth = document.getElementById('block-canvas')?.clientWidth || 1;
-var canvasHeight = document.getElementById('block-canvas')?.clientHeight || 1;
-
-var windowWidth = window.innerWidth;
-var windowHeight = window.innerHeight;
 
 var stageScale = 1;
+var oldStageScale = 1;
 stage.scale({x: stageScale, y: stageScale});
 
 var mouseDown = false;
@@ -40,26 +36,35 @@ stage.on("wheel", function(e) {
 
   stageScale -= e.evt.deltaY/100;
 
-  let mouse_x = e.evt.screenX;
-  let mouse_y = e.evt.screenY;
+  if (stageScale < 0.3) stageScale = 0.3;
+  if (stageScale > 3) stageScale = 3;
 
-  let stageScaleOffsetX = stage.width()/2 - stage.width()/2*stageScale
-  let stageScaleOffsetY = stage.height()/2 - stage.height()/2*stageScale
+  let mouse_x = e.evt.x - 53;
+  let mouse_y = e.evt.y - 53;
+
+  let stageScaleOffsetX = mouse_x*oldStageScale - mouse_x*stageScale
+  let stageScaleOffsetY = mouse_y*oldStageScale - mouse_y*stageScale
 
   stage.scale({x: stageScale, y: stageScale});
 
-  stage.x(stageScaleOffsetX);
-  stage.y(stageScaleOffsetY);
+  stage.x(stage.x() + stageScaleOffsetX);
+  stage.y(stage.y() + stageScaleOffsetY);
 
+  oldStageScale = stageScale;
 
+  e.cancelBubble = true;
 })
 stage.on("mousedown", function(e) {
   mouseDown = true;
   stage.container().style.cursor = 'move';
+
+  e.cancelBubble = true;
 })
 stage.on("mouseup", function(e) {
   mouseDown = false;
   stage.container().style.cursor = 'default';
+
+  e.cancelBubble = true;
 })
 stage.on("mousemove", function(e) {
   if(mouseDown) {
@@ -68,6 +73,8 @@ stage.on("mousemove", function(e) {
     stage.offsetX(stageOffset.x);
     stage.offsetY(stageOffset.y);
   }
+
+  e.cancelBubble = true;
 })
 
 function fitStageIntoParentContainer() {
@@ -89,14 +96,14 @@ fitStageIntoParentContainer();
 var layer = new Konva.Layer();
 stage.add(layer);
 
-let debugBorder = new Konva.Rect({
-  x: 0,
-  y: 0,
-  width: stage.width(),
-  height: stage.height(),
-  stroke: 'red'
-});
-layer.add(debugBorder);
+// let debugBorder = new Konva.Rect({
+//   x: 0,
+//   y: 0,
+//   width: stage.width(),
+//   height: stage.height(),
+//   stroke: 'red'
+// });
+// layer.add(debugBorder);
 
 ///////////////////////////////
 // Adding and editing blocks //
@@ -105,7 +112,7 @@ layer.add(debugBorder);
 function addBlock(x: number, y: number, type: EBlokType){
 
   let backendBlock = blokFactory(type);
-  let frontendBlok = backendBlock.renderBlok(x, y, blokOutputClickHandler, blokInputClickHandler, blokDragHandler);
+  let frontendBlok = backendBlock.renderBlok(x - stage.x(), y - stage.y(), blokOutputClickHandler, blokInputClickHandler, blokDragHandler);
 
   blokPile.push(
       {
@@ -123,12 +130,14 @@ function blokOutputClickHandler(outputFId: string) {
   linkBuffer.originFrontendId = outputFId;
   linkBuffer.destinationFrontendId = "";
 }
+
 function blokInputClickHandler(inputFId: string) {
   if(linkBuffer.originFrontendId != "") {
     linkBuffer.destinationFrontendId = inputFId;
     createLinkWithBuffer();
   }
 }
+
 function blokDragHandler(subjectId: string) {
   blokLinks.forEach((link) => {
     if(link.destinationFrontendId.split('-')[0] == subjectId || link.originFrontendId.split('-')[0] == subjectId) {
@@ -195,22 +204,27 @@ declare global {
     runBlokPile: Function;
   }
 }
+
 window.allowDrop = function(ev: any) {
   ev.preventDefault();
 }
+
 window.drag = function(ev: any) {
   ev.dataTransfer.setData("blockType", ev.target.id);
 }
+
 window.drop = function(ev: any) {
   var blockType = ev.dataTransfer.getData("blockType");
   addBlock(ev.offsetX, ev.offsetY, parseInt(blockType));
   ev.preventDefault();
 }
+
 window.toggleBlokList = function() {
   let blokListElement = document.getElementById("blok-list");
   blokListElement?.classList.toggle('minimised');
   blokListElement?.classList.toggle('open');
 }
+
 window.runBlokPile = function() {
   runBlokPile(blokPile, blokLinks);
 }
